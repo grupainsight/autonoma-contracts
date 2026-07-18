@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/grupainsight/autonoma-contracts/schemas/agent-run.schema.json",
+  "title": "AgentRun",
+  "description": "Record of every agent execution. Tracks timing, status, LLM usage and cost. Without this, a broken collector is invisible until data goes stale.",
+  "type": "object",
+  "required": ["id", "client_id", "agent", "job_type", "started_at", "status", "created_at"],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "client_id": {
+      "type": "string"
+    },
+    "agent": {
+      "type": "string",
+      "enum": ["ads", "seo", "gbp", "merchant"]
+    },
+    "job_type": {
+      "type": "string",
+      "enum": ["weekly", "daily", "on_demand"],
+      "description": "What triggered this run"
+    },
+    "scheduled_for": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "Expected execution time from cron schedule"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["RUNNING", "SUCCESS", "PARTIAL", "FAILED", "SKIPPED"],
+      "description": "PARTIAL = some sources succeeded, some failed. SKIPPED = no significant change, no LLM invoked."
+    },
+    "error_code": {
+      "type": ["string", "null"]
+    },
+    "error_message": {
+      "type": ["string", "null"],
+      "maxLength": 2000
+    },
+    "input_records": {
+      "type": ["integer", "null"],
+      "description": "Number of records fetched from source APIs"
+    },
+    "output_records": {
+      "type": ["integer", "null"],
+      "description": "Number of recommendations/alerts produced"
+    },
+    "llm_used": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether LLM synthesis was invoked (false when no significant change)"
+    },
+    "input_tokens": {
+      "type": ["integer", "null"],
+      "description": "Anthropic API input tokens consumed"
+    },
+    "output_tokens": {
+      "type": ["integer", "null"],
+      "description": "Anthropic API output tokens consumed"
+    },
+    "llm_cost_usd": {
+      "type": ["number", "null"],
+      "description": "Calculated cost: (input_tokens/1M * 3) + (output_tokens/1M * 15)"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/grupainsight/autonoma-contracts/schemas/dashboard-module.schema.json",
+  "title": "DashboardModule",
+  "description": "Standard output contract for every Autonoma agent. Each agent produces this after a successful run. API aggregates these into the dashboard response. Field 'stale' is NOT stored - computed by API at read time from last_successful_run + stale_after_seconds per source.",
+  "type": "object",
+  "required": ["module", "status", "summary", "last_successful_run", "data_period", "sources", "confidence", "metrics", "top_issue"],
+  "properties": {
+    "module": {
+      "type": "string",
+      "enum": ["ads", "seo", "gbp", "merchant"],
+      "description": "Agent identifier"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["ok", "warning", "critical", "error", "no_data"],
+      "description": "Overall module health"
+    },
+    "summary": {
+      "type": "string",
+      "maxLength": 200,
+      "description": "Human-readable one-line summary in client's language"
+    },
+    "last_successful_run": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp of the last successful agent run"
+    },
+    "data_period": {
+      "type": "object",
+      "required": ["from", "to"],
+      "properties": {
+        "from": { "type": "string", "format": "date" },
+        "to": { "type": "string", "format": "date" }
+      }
+    },
+    "sources": {
+      "type": "object",
+      "description": "Per-source freshness tracking. Keys are source names (e.g. 'reviews', 'performance', 'profile'). API computes stale per source.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["last_successful_run", "stale_after_seconds"],
+        "properties": {
+          "last_successful_run": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "stale_after_seconds": {
+            "type": "integer",
+            "description": "2x normal interval. E.g. weekly source = 1209600 (14 days), daily = 172800 (2 days)"
+          }
+        }
+      }
+    },
+    "confidence": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Overall confidence in the module data quality"
+    },
+    "metrics": {
+      "type": "object",
+      "description": "Agent-specific key metrics. Schema varies per module.",
+      "additionalProperties": true
+    },
+    "top_issue": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["title", "impact"],
+          "properties": {
+            "title": { "type": "string" },
+            "impact": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"] }
+          }
+        },
+        { "type": "null" }
+      ],
+      "description": "Single most important issue, or null if none"
+    }
+  }
+}

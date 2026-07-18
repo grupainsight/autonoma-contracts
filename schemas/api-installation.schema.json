@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/grupainsight/autonoma-contracts/schemas/api-installation.schema.json",
+  "title": "ApiInstallation",
+  "description": "Token-based auth for Autonoma API consumers (WordPress plugin, future Shopify, etc). Token format: aut_live_<key_id>.<secret>. API parses key_id, looks up installation, verifies secret.",
+  "type": "object",
+  "required": ["id", "key_id", "client_id", "site_url", "secret_hash", "enabled_modules", "status", "created_at"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Internal installation ID"
+    },
+    "key_id": {
+      "type": "string",
+      "description": "Public part of token, used for lookup. Globally unique."
+    },
+    "client_id": {
+      "type": "string",
+      "description": "FK to client record"
+    },
+    "site_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL of the WordPress site or other consumer"
+    },
+    "secret_hash": {
+      "type": "string",
+      "description": "bcrypt hash of the secret part of the token"
+    },
+    "enabled_modules": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["ads", "seo", "gbp", "merchant"]
+      },
+      "description": "Which agent modules this installation can access"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "suspended", "revoked"]
+    },
+    "token_expires_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "last_rotated_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "last_seen_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

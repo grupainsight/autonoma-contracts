@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/grupainsight/autonoma-contracts/schemas/recommendation.schema.json",
+  "title": "Recommendation",
+  "description": "Unified recommendation record produced by any Autonoma agent. Supports INSIGHT (informational), RECOMMENDATION (suggested action), and ACTION (executable change requiring approval).",
+  "type": "object",
+  "required": ["id", "client_id", "source_agent", "type", "status", "title", "summary", "impact", "confidence", "reason_codes", "evidence", "dedupe_key", "first_seen_at", "last_seen_at", "occurrence_count", "created_at", "updated_at"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique recommendation ID, e.g. rec_20260718_merchant_001"
+    },
+    "client_id": {
+      "type": "string"
+    },
+    "source_agent": {
+      "type": "string",
+      "enum": ["ads", "seo", "gbp", "merchant"],
+      "description": "Which agent created this recommendation"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["INSIGHT", "RECOMMENDATION", "ACTION"],
+      "description": "INSIGHT = info only. RECOMMENDATION = suggested action (acknowledge/reject). ACTION = executable change (approve/reject/execute)."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["NEW", "ACKNOWLEDGED", "APPROVED", "REJECTED", "IN_PROGRESS", "COMPLETED", "WITHDRAWN", "EXPIRED"]
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "summary": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "Detailed explanation of the issue and its business impact"
+    },
+    "recommended_action": {
+      "type": ["string", "null"],
+      "maxLength": 1000,
+      "description": "What should be done. Null for INSIGHTs."
+    },
+    "impact": {
+      "type": "string",
+      "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+    },
+    "confidence": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "reason_codes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Machine-readable codes explaining confidence or issue, e.g. CONF_FEED_PROCESSING, GTIN_MISSING"
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source", "data"],
+        "properties": {
+          "source": { "type": "string" },
+          "data": { "type": "object", "additionalProperties": true }
+        }
+      },
+      "description": "Cross-agent evidence supporting this recommendation"
+    },
+    "requires_approval": {
+      "type": "boolean",
+      "default": false,
+      "description": "True only for ACTIONs that execute changes (e.g. publish review reply)"
+    },
+    "dedupe_key": {
+      "type": "string",
+      "maxLength": 500,
+      "description": "Deterministic key for deduplication. Format: {agent}:{issue_type}:{context_id}:{scope}. Example: merchant:missing_gtin:merchant_123:SHOPPING_ADS:PL"
+    },
+    "subject_key": {
+      "type": ["string", "null"],
+      "description": "Optional key identifying the subject (product, location, campaign)"
+    },
+    "first_seen_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this issue was first detected (persists across updates)"
+    },
+    "last_seen_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the issue was last confirmed present"
+    },
+    "occurrence_count": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "How many consecutive runs detected this issue"
+    },
+    "resolved_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "supersedes_recommendation_id": {
+      "type": ["string", "null"],
+      "description": "If this is a reopened issue, links to the previously resolved recommendation"
+    },
+    "expires_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "Required for INSIGHTs. Optional for others. Null = no expiry."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/grupainsight/autonoma-contracts/schemas/recommendation-event.schema.json",
+  "title": "RecommendationEvent",
+  "description": "Audit trail for every status change on a recommendation. Covers: agent transitions, client actions from plugin, email approve/reject, system expiry.",
+  "type": "object",
+  "required": ["id", "recommendation_id", "previous_status", "new_status", "actor_type", "source", "created_at"],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "recommendation_id": {
+      "type": "string"
+    },
+    "previous_status": {
+      "type": "string",
+      "enum": ["NEW", "ACKNOWLEDGED", "APPROVED", "REJECTED", "IN_PROGRESS", "COMPLETED", "WITHDRAWN", "EXPIRED"]
+    },
+    "new_status": {
+      "type": "string",
+      "enum": ["NEW", "ACKNOWLEDGED", "APPROVED", "REJECTED", "IN_PROGRESS", "COMPLETED", "WITHDRAWN", "EXPIRED"]
+    },
+    "actor_type": {
+      "type": "string",
+      "enum": ["AGENT", "CLIENT_USER", "GI_USER", "SYSTEM"],
+      "description": "AGENT = automated agent transition. CLIENT_USER = action from plugin/email. GI_USER = Grupa Insight team. SYSTEM = automatic expiry/cleanup."
+    },
+    "actor_id": {
+      "type": ["string", "null"],
+      "description": "User ID, agent name, or null for SYSTEM"
+    },
+    "source": {
+      "type": "string",
+      "enum": ["agent", "plugin", "email", "api", "system"],
+      "description": "Where the action originated"
+    },
+    "comment": {
+      "type": ["string", "null"],
+      "maxLength": 1000,
+      "description": "Optional reason for the action"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}
