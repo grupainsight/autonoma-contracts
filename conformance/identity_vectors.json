@@ -1,0 +1,52 @@
+{
+  "_doc": "Shared conformance vectors for client identity. Every implementation (SQL resolve_client_key/normalize_domain, Python autonoma_contracts.identity, TS copies) must pass all of them.",
+  "normalize_domain": [
+    ["spcg.pl", "spcg.pl"],
+    ["www.spcg.pl", "spcg.pl"],
+    ["WWW.SPCG.PL", "spcg.pl"],
+    ["https://www.spcg.pl/kontakt?x=1", "spcg.pl"],
+    ["http://spcg.pl:443/", "spcg.pl"],
+    ["spcg.pl.", "spcg.pl"],
+    ["  spcg.pl  ", "spcg.pl"],
+    ["admin.usuwaniewszy.pl", "admin.usuwaniewszy.pl"],
+    ["sklep.zielentozycie.pl", "sklep.zielentozycie.pl"],
+    ["www2.spcg.pl", "www2.spcg.pl"],
+    ["", null],
+    [null, null],
+    ["http://", null]
+  ],
+  "profiles": [
+    {"client_key": "piccolotesoro", "domain": "piccolotesoro.pl", "ads_customer_id": "1839755261", "active": true,
+     "identifiers": {"merchant_client_ids": ["client_piccolo_tesoro"], "merchant_ids": ["107773243"]}},
+    {"client_key": "mamyzglowy", "domain": "mamyzglowy.pl", "ads_customer_id": "2320852709", "active": true,
+     "identifiers": {"domains": ["usuwaniewszy.pl", "admin.usuwaniewszy.pl", "wszystkonawszy.pl", "admin.wszystkonawszy.pl", "grzebiennawszy.pl"]}},
+    {"client_key": "spcg", "domain": "spcg.pl", "ads_customer_id": "9657129407", "active": true,
+     "identifiers": {"domains": ["financiallitigation.spcg.pl"]}},
+    {"client_key": "grupainsight", "domain": "grupainsight.com", "ads_customer_id": null, "active": true, "identifiers": {}}
+  ],
+  "resolve": [
+    ["client_key", "piccolotesoro", "piccolotesoro"],
+    ["ads_customer_id", "1839755261", "piccolotesoro"],
+    ["merchant_client_id", "client_piccolo_tesoro", "piccolotesoro"],
+    ["merchant_id", "107773243", "piccolotesoro"],
+    ["domain", "https://www.piccolotesoro.pl/sklep", "piccolotesoro"],
+    ["domain", "admin.usuwaniewszy.pl", "mamyzglowy"],
+    ["domain", "www.usuwaniewszy.pl", "mamyzglowy"],
+    ["domain", "sklep.usuwaniewszy.pl", null],
+    ["domain", "financiallitigation.spcg.pl", "spcg"],
+    ["domain", "litigation.spcg.pl", null],
+    ["domain", "grupainsight.com", "grupainsight"],
+    ["any", "2320852709", "mamyzglowy"],
+    ["any", "client_piccolo_tesoro", "piccolotesoro"],
+    ["any", "grupainsight.com", "grupainsight"],
+    ["any", "unknown", null],
+    ["ads_customer_id", "piccolotesoro", null],
+    ["nonsense_kind", "piccolotesoro", "ERROR"]
+  ],
+  "conflicts": [
+    {"_doc": "Two clients claiming the same identifier must be refused.",
+     "profiles": [{"client_key": "a", "domain": "x.pl", "identifiers": {}}, {"client_key": "b", "domain": "c.pl", "identifiers": {"domains": ["www.x.pl"]}}]},
+    {"profiles": [{"client_key": "a", "ads_customer_id": "1", "identifiers": {}}, {"client_key": "b", "identifiers": {"ads_customer_ids": ["1"]}}]},
+    {"profiles": [{"client_key": "a", "identifiers": {"merchant_client_ids": ["m"]}}, {"client_key": "b", "identifiers": {"merchant_client_ids": ["m"]}}]}
+  ]
+}
