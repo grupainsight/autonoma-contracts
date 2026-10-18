@@ -1,0 +1,21 @@
+{
+  "_doc": "Shared vectors for the mutation policy. Each case: request overrides on base, current state, resource owner, seen idempotency keys -> [outcome, reason].",
+  "base": {"client_key": "mamyzglowy", "actor_type": "CLIENT_USER", "actor_id": "u1", "operation": "recommendation.status",
+           "resource_id": "rec_1", "expected_state": "NEW", "requested": {"status": "ACKNOWLEDGED"},
+           "approved_scope": null, "idempotency_key": "rec_1:ack:2026-10-18T10", "compensation": {"status": "NEW"}},
+  "policy": {"operation": "recommendation.status", "allowed_actors": ["CLIENT_USER", "GI_USER"], "requires_approval": false},
+  "cases": [
+    {"name": "legal", "req": {}, "state": "NEW", "owner": "mamyzglowy", "expect": ["OK", "OK"]},
+    {"name": "other client's resource", "req": {}, "state": "NEW", "owner": "piccolotesoro", "expect": ["REFUSED", "RESOURCE_OF_OTHER_CLIENT"]},
+    {"name": "resource not found", "req": {}, "state": null, "owner": null, "expect": ["REFUSED", "RESOURCE_OF_OTHER_CLIENT"]},
+    {"name": "unresolved client", "req": {"client_key": ""}, "state": "NEW", "owner": "", "expect": ["REFUSED", "CLIENT_UNRESOLVED"]},
+    {"name": "agent not allowed", "req": {"actor_type": "AGENT"}, "state": "NEW", "owner": "mamyzglowy", "expect": ["REFUSED", "ACTOR_NOT_ALLOWED"]},
+    {"name": "stale state", "req": {}, "state": "REJECTED", "owner": "mamyzglowy", "expect": ["CONFLICT", "STATE_CHANGED"]},
+    {"name": "no idempotency key", "req": {"idempotency_key": ""}, "state": "NEW", "owner": "mamyzglowy", "expect": ["REFUSED", "IDEMPOTENCY_KEY_INVALID"]},
+    {"name": "replay", "req": {}, "state": "NEW", "owner": "mamyzglowy", "seen": ["rec_1:ack:2026-10-18T10"], "expect": ["REPLAYED", "IDEMPOTENCY_KEY_SEEN"]},
+    {"name": "irreversible without approval", "req": {"compensation": null}, "state": "NEW", "owner": "mamyzglowy", "expect": ["REFUSED", "APPROVAL_REQUIRED"]},
+    {"name": "irreversible within approval", "req": {"compensation": null, "approved_scope": {"status": "ACKNOWLEDGED"}}, "state": "NEW", "owner": "mamyzglowy", "expect": ["OK", "OK"]},
+    {"name": "beyond approval", "req": {"compensation": null, "approved_scope": {"status": "REJECTED"}}, "state": "NEW", "owner": "mamyzglowy", "expect": ["REFUSED", "OUTSIDE_APPROVED_SCOPE"]},
+    {"name": "wrong operation", "req": {"operation": "catalog.publish"}, "state": "NEW", "owner": "mamyzglowy", "expect": ["REFUSED", "OPERATION_MISMATCH"]}
+  ]
+}
