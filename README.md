@@ -16,7 +16,7 @@ tests/            Contract tests (lifecycle transitions, dedupe, stale, token is
 
 ## Versioning
 
-This repo follows semver. Current: **1.0.0**
+This repo follows semver. Current: **1.1.0**
 
 Breaking changes to schemas or API contract require a major version bump.
 

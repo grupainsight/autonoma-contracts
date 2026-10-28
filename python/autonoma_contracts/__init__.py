@@ -7,10 +7,15 @@ from autonoma_contracts.models import (
     Evidence,
     TopIssue,
 )
+from autonoma_contracts.merchant_performance import (
+    MarketingMethod,
+    ProductPerformanceRow,
+    PerformancePeriod,
+)
 from autonoma_contracts.lifecycle import (
     validate_transition,
     IllegalTransitionError,
     ALLOWED_TRANSITIONS,
 )
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
